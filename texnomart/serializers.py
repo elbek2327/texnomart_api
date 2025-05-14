@@ -5,6 +5,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 # from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.serializers import PrimaryKeyRelatedField, ModelSerializer
+from rest_framework.validators import UniqueTogetherValidator
 
 #User serializers
 User = get_user_model()
@@ -63,23 +65,41 @@ class CategorySerializer(serializers.ModelSerializer):
         read_only_fields = ('slug',)
 
 #Korzinka Serializer
-class KorzinkaSerializer(serializers.ModelSerializer):
+class KorzinkaSerializer(ModelSerializer):
     """Korzinka modeli uchun serializer"""
-    product = serializers.SlugRelatedField(queryset = Product.objects.all(), slug_field = 'name') # Productni ham olish uchn
-    user = serializers.SlugRelatedField(queryset = User.objects.all(), slug_field = 'username' ) # userni korzinka listga chiqarish uchun
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    product = PrimaryKeyRelatedField(queryset=Product.objects.all(), many=False)
     class Meta:
         model = Korzinka
-        fields = ('id','user', 'product', 'quantity','created_at')
-        read_only_files = ('created_at',)
+        fields = ('id','user', 'product', 'quantity', 'created_at')
+        read_only_files = ('id','created_at', 'user')
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Korzinka.objects.all(),
+                fields=['user', 'product'],
+                message='This product is already in the user\'s korzinka.'
+            )
+        ]
+        
+    def create(self,validated_data):
+        return Korzinka.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        # instance.user = validated_data.get('user', instance.user) #  Don't allow user to be changed.
+        instance.product = validated_data.get('product', instance.product)
+        instance.quantity = validated_data.get('quantity', instance.quantity)
+        instance.save()
+        return instance            
+
 
 #Comment Serializers
 class CommentSerializer(serializers.ModelSerializer):
     """Comment uchun serializer"""
-    user = serializers.SlugRelatedField(queryset = User.objects.all(), slug_field = 'username')
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
     product = serializers.SlugRelatedField(queryset = Product.objects.all(), slug_field = 'name')
     
     class Meta:
         model = Comment
         fields = '__all__'
-        read_only_files = ('created_at',)
+        read_only_files = ('created_at','user',)
         
