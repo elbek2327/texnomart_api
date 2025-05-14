@@ -35,21 +35,21 @@ urlpatterns = [
     path('products/by_category/', views.ProductByCategoryListView.as_view(), name='product_by_category'),
     
     #Category CRUD
-    path('category_add/', views.CategoryListCreateView.as_view(), name='category_add'),
+    path('add/category/', views.CategoryListCreateView.as_view(), name='add_category'),
     path('category/<slug:slug>/', views.CategoryRetrieveUpdateDestroyView.as_view(), name='category_update_delete_by_id'),
     
     # Product CRUD
-    path('product_add/', views.ProductListCreateView.as_view(), name='product_create'),
+    path('add/product/', views.ProductListCreateView.as_view(), name='add_product'),
     path('product/<int:pk>/', views.ProductRetriveUpdateDestroyView.as_view(), name='product_update_delete_by_id'),
     
     #Korzinka
     path('all_korzinka/', views.KorzinkaListView.as_view(), name='all_things_in_korzinka'),
-    path('korzinka_add/', views.KorzinkaListCreateView.as_view(), name='add_item_to_korzinka'),
+    path('add/korzinka/', views.KorzinkaListCreateView.as_view(), name='add_item_to_korzinka'),
     path('korzinka/edit/<int:pk>/', views.KorzinkaRetriveUpdateDestroyView.as_view(), name='change_korzinka_by_id'),
     
     #Comments
     path('all_comments/', views.CommentListView.as_view(), name='all_comments'),
-    path('comment_add/', views.CommentCreateView.as_view(), name='add comment'),
+    path('add/comment/', views.CommentCreateView.as_view(), name='add comment'),
     path('comment/edit/<int:pk>/', views.CommentUpdateDeleteView.as_view(), name='change_comment_by_id'),
     
 ]
