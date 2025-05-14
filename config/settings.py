@@ -133,7 +133,7 @@ CACHES = {
         'LOCATION': os.path.join(BASE_DIR, 'log_cache'),
     }
 }
-
+CSRF_TRUSTED_ORIGINS = ["https://texnomartapi-production.up.railway.app"]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
